@@ -4,7 +4,7 @@ How the experiments are designed: the data and split protocols, the stain-handli
 
 ## 1. Problem
 
-Whether breast cancer has spread to the lymph nodes decides staging and treatment, and finding small metastases in whole-slide images is slow, tiring work for pathologists. CNNs detect metastases well **inside the hospital they were trained in** — but slides from another hospital look different: staining protocols, reagents, section thickness and scanners all change the colours and textures. A model that is 95 % accurate at home can drop sharply elsewhere, and, worse, it often stays confident while it is wrong.
+Whether breast cancer has spread to the lymph nodes decides staging and treatment, and finding small metastases in whole-slide images is slow, tiring work for pathologists. CNNs detect metastases well **inside the hospital they were trained in**: but slides from another hospital look different: staining protocols, reagents, section thickness and scanners all change the colours and textures. A model that is 95 % accurate at home can drop sharply elsewhere, and, worse, it often stays confident while it is wrong.
 
 This project measures that drop and compares the main remedies on the same footing: what helps a CNN generalise to an unseen hospital, and does it know when it is unsure?
 
@@ -19,11 +19,11 @@ This project measures that drop and compares the main remedies on the same footi
 | **Official hospitals** | hospitals 0, 3, 4 | held-out patients of 0, 3, 4 | hospital 2 | the standard WILDS hospital split |
 | **Leave-one-hospital-out** | four hospitals | held-out patients of those four | the fifth | does the conclusion depend on *which* hospital is unseen? |
 
-**Validation without leakage.** The official in-distribution validation set consists of random patches from the *same slides* as the training patches; neighbouring patches of one slide are near-duplicates, so it overestimates performance and can mislead model selection. Here all slides of held-out **patients** are used instead (one patient per training hospital — several patients contribute more than one slide, so holding out single slides would still share patients and staining batches with training). The official variant is kept as a switch so the two can be compared.
+**Validation without leakage.** The official in-distribution validation set consists of random patches from the *same slides* as the training patches; neighbouring patches of one slide are near-duplicates, so it overestimates performance and can mislead model selection. Here all slides of held-out **patients** are used instead (one patient per training hospital: several patients contribute more than one slide, so holding out single slides would still share patients and staining batches with training). The official variant is kept as a switch so the two can be compared.
 
 **Model selection.** The unseen hospital is **never** used to select the reported model. WILDS itself selects on the out-of-distribution validation hospital 1; that checkpoint is also stored and its test result reported separately as "oracle selection", which makes the comparison with WILDS numbers possible and shows how much the choice of selection data matters. Other deliberate differences from the WILDS reference: ImageNet-pretrained networks (WILDS trains DenseNet-121 from scratch; `pretrained: false` reproduces that) and, for the Colab budget, a fresh random 30 % of the training patches in each epoch.
 
-## 4. Stain handling — the main comparison
+## 4. Stain handling: the main comparison
 
 | Method | Training | Test | Idea |
 |---|---|---|---|
@@ -34,9 +34,9 @@ This project measures that drop and compares the main remedies on the same footi
 | Macenko + HED | both | normalise | combination |
 | greyscale | greyscale | greyscale | lower bound on how much colour matters |
 
-The Macenko reference is fitted on tissue-rich patches balanced over the training hospitals only. Geometric augmentation (90° rotations and flips — tissue has no canonical orientation) is used in every setting.
+The Macenko reference is fitted on tissue-rich patches balanced over the training hospitals only. Geometric augmentation (90° rotations and flips: tissue has no canonical orientation) is used in every setting.
 
-**Test-time adaptation.** In addition, **AdaBN** (Li et al., 2018) re-estimates the batch-normalisation statistics on the unlabelled patches of the unseen hospital — one pass over all of its patches in shuffled batches, with only the batch-norm layers in training mode. It uses no labels and no gradient steps, so it is applicable in practice whenever a batch of the new hospital's slides is available.
+**Test-time adaptation.** In addition, **AdaBN** (Li et al., 2018) re-estimates the batch-normalisation statistics on the unlabelled patches of the unseen hospital: one pass over all of its patches in shuffled batches, with only the batch-norm layers in training mode. It uses no labels and no gradient steps, so it is applicable in practice whenever a batch of the new hospital's slides is available.
 
 ## 5. Networks and training
 
@@ -55,10 +55,10 @@ Binary cross-entropy, AdamW, one-cycle learning-rate schedule, mixed precision. 
 | Discrimination | accuracy, balanced accuracy, AUROC; per-slide accuracy on the unseen hospital |
 | Generalisation gap | in-distribution validation vs unseen-hospital accuracy |
 | Calibration | expected calibration error (15 bins), negative log-likelihood, reliability diagrams; before and after temperature scaling (Guo et al., 2017) fitted on in-distribution validation |
-| Selective prediction | accuracy on the 90 / 80 / 70 / 50 % most confident patches — the setting in which uncertain patches are referred to a pathologist |
+| Selective prediction | accuracy on the 90 / 80 / 70 / 50 % most confident patches: the setting in which uncertain patches are referred to a pathologist |
 | Stain shift | per-hospital haematoxylin / eosin profiles; example patches before and after normalisation |
 
-Temperature scaling is fitted on the training hospitals. Whether it still helps on an unseen hospital — or whether calibration breaks down exactly where it is needed — is one of the questions of the study.
+Temperature scaling is fitted on the training hospitals. Whether it still helps on an unseen hospital (or whether calibration breaks down exactly where it is needed) is one of the questions of the study.
 
 ## 7. Limitations
 
