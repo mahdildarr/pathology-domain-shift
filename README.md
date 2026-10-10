@@ -20,14 +20,20 @@ Finding small metastases in lymph-node slides is slow work for pathologists, and
 
 The full experiment design is in [docs/DESIGN.md](docs/DESIGN.md).
 
-## Roadmap
+## Progress
 
-- [x] Data loading, split protocols, stain normalisation and augmentation
-- [x] Training, AdaBN, calibration and selective prediction metrics, tested on synthetic data
-- [ ] Dataset exploration: stain profiles per hospital
-- [ ] Stain handling comparison on the official split (three seeds)
+- [x] Camelyon17-WILDS loading with official and leave-one-hospital-out protocols
+- [x] Patient-level validation without leakage
+- [x] Macenko normalisation, HED augmentation and colour baselines
+- [x] AdaBN test-time adaptation
+- [x] Calibration and selective prediction metrics
+- [x] Dataset exploration figures
+- [x] Unit tests, end-to-end test and Colab notebook
+
+Next:
+
+- [ ] Stain handling comparison on the official split
 - [ ] Leave-one-hospital-out experiments
-- [ ] Write-up of results
 
 ## Code
 
